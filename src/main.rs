@@ -96,37 +96,21 @@ fn main() -> Result<()> {
         std::process::exit(1);
     }
 
-    let result = magic_mount::magic_mount(
+    let magic_mount_result = magic_mount::magic_mount(
         &tempdir,
         Path::new(MODULE_PATH),
         &config.mountsource,
         &config.partitions,
         config.umount,
     );
+    let bind_mount_result = bind_mount(config.umount);
 
     cleanup(tempdir);
     unmount()?;
 
-    match result {
+    match magic_mount_result {
         Ok(()) => {
             log::info!("Magic Mount Completed Successfully");
-            let result = bind_mount(config.umount);
-
-            match result {
-                Ok(()) => {
-                    log::info!("Bind mount Completed Successfully");
-                    Ok(())
-                }
-                Err(e) => {
-                    log::error!("Bind mount Failed");
-                    let e = anyhow::Error::from(e);
-                    for cause in e.chain() {
-                        log::error!("{cause:#?}");
-                    }
-                    log::error!("{:#?}", e.backtrace());
-                    Err(e.into())
-                }
-            }
         }
         Err(e) => {
             log::error!("Magic Mount Failed");
@@ -136,7 +120,22 @@ fn main() -> Result<()> {
                 log::error!("{cause:#?}");
             }
             log::error!("{:#?}", e.backtrace());
-            Err(e.into())
         }
     }
+
+    match bind_mount_result {
+        Ok(()) => {
+            log::info!("Bind mount Completed Successfully");
+        }
+        Err(e) => {
+            log::error!("Bind mount Failed");
+            let e = anyhow::Error::from(e);
+            for cause in e.chain() {
+                log::error!("{cause:#?}");
+            }
+            log::error!("{:#?}", e.backtrace());
+        }
+    }
+
+    Ok(())
 }
