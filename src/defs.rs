@@ -15,3 +15,4 @@ pub const REPLACE_DIR_XATTR: &str = "trusted.overlay.opaque";
 pub const REPLACE_DIR_FILE_NAME: &str = ".replace";
 pub const CONFIG_FILE: &str = concatcp!(MAGIC_MOUNT, "/config.toml");
 pub const MODULE_PROP: &str = concatcp!(MODULE_PATH, "/", env!("MODULE_ID"), "/module.prop");
+pub const SCANNED_LIST: &str = concatcp!(MAGIC_MOUNT, "/scan.ret");
