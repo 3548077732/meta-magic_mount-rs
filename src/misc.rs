@@ -42,7 +42,9 @@ fn init_list() {
 }
 
 fn init_hook() {
-    std::panic::set_hook(Box::new(|e| {
+    let hook = std::panic::take_hook();
+    std::panic::set_hook(Box::new(move |e| {
+        hook(e);
         log::error!("panicked!!, err: {e}");
     }));
 }
