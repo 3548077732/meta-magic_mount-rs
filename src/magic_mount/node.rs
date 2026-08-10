@@ -4,7 +4,7 @@
 use std::{
     collections::hash_map::Entry,
     fmt,
-    fs::{self, FileType},
+    fs::{DirEntry, FileType},
     os::unix::fs::{FileTypeExt, MetadataExt},
     path::{Path, PathBuf},
 };
@@ -100,7 +100,7 @@ impl Node {
 
             let node = match self.children.entry(name.clone()) {
                 Entry::Occupied(o) => Some(o.into_mut()),
-                Entry::Vacant(v) => Self::new_module(&name, entry.path()).map(|it| v.insert(it)),
+                Entry::Vacant(v) => Self::new_module(&name, &entry).map(|it| v.insert(it)),
             };
 
             if let Some(node) = node {
@@ -153,21 +153,20 @@ impl Node {
         }
     }
 
-    pub fn new_module<S, P>(name: &S, entry: P) -> Option<Self>
+    pub fn new_module<S>(name: &S, entry: &DirEntry) -> Option<Self>
     where
         S: ToString,
-        P: AsRef<Path>,
     {
-        if let Ok(metadata) = fs::symlink_metadata(entry.as_ref()) {
-            let path = entry.as_ref();
+        if let Ok(metadata) = entry.metadata() {
+            let path = entry.path();
             let file_type = if metadata.file_type().is_char_device() && metadata.rdev() == 0 {
                 NodeFileType::Whiteout
             } else {
                 NodeFileType::from(metadata.file_type())
             };
 
-            let replace = file_type == NodeFileType::Directory && Self::dir_is_replace(path);
-            let skip = Self::dir_is_skip(path);
+            let replace = file_type == NodeFileType::Directory && Self::dir_is_replace(&path);
+            let skip = Self::dir_is_skip(&path);
             if replace {
                 log::debug!("{} need replace", path.display());
             }
@@ -178,7 +177,7 @@ impl Node {
                 name: name.to_string(),
                 file_type,
                 children: FxHashMap::default(),
-                module_path: Some(path.to_path_buf()),
+                module_path: Some(path),
                 replace,
                 skip,
             });
