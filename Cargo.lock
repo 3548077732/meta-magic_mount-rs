@@ -778,7 +778,6 @@ dependencies = [
  "encoding_rs",
  "env_logger",
  "extattr",
- "fastrand",
  "glob",
  "hex",
  "java-properties",

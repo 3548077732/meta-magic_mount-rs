@@ -1,8 +1,6 @@
 // Copyright (C) 2026 meta-magic_mount-rs developers
 // SPDX-License-Identifier: GPL-v3
 
-use std::path::Path;
-
 use rustix::mount::{UnmountFlags, unmount};
 
 use crate::{defs, errors::Result, utils::ksucalls};
@@ -59,17 +57,11 @@ pub fn emulated_soft_reboot(source: &str) -> Result<()> {
     Ok(())
 }
 
-pub fn cleanup<P>(tempdir: P)
-where
-    P: AsRef<Path>,
-{
-    if let Err(e) = unmount(
-        tempdir.as_ref().to_string_lossy().to_string(),
-        UnmountFlags::DETACH,
-    ) {
+pub fn cleanup() {
+    if let Err(e) = unmount("/debug_ramdisk", UnmountFlags::DETACH) {
         log::warn!("failed to unmount tempdir: {e}");
     }
-    if let Err(e) = std::fs::remove_dir(&tempdir) {
+    if let Err(e) = std::fs::remove_dir("/debug_ramdisk") {
         log::warn!("failed to remove tempdir: {e}");
     }
 }

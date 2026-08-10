@@ -20,18 +20,6 @@ fn test_validate_module_id_invalid() {
 }
 
 #[test]
-fn test_generate_tmp() {
-    let path = generate_tmp();
-    let file_name = path.file_name().unwrap().to_str().unwrap();
-    let path2 = generate_tmp();
-
-    assert_eq!(path.parent(), Some(Path::new("/mnt")));
-    assert_eq!(file_name.len(), 10);
-    assert!(file_name.chars().all(|c| c.is_ascii_alphanumeric()));
-    assert_ne!(path, path2);
-}
-
-#[test]
 fn test_ensure_dir_exists_success() {
     let tmp_dir = tempfile::tempdir().unwrap();
     let target_dir = tmp_dir.path().join("test");

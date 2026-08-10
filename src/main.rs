@@ -14,8 +14,6 @@ mod parser;
 mod scanner;
 mod utils;
 
-use std::path::Path;
-
 use rustix::mount::{MountFlags, mount};
 
 use crate::{
@@ -73,13 +71,9 @@ fn main() -> Result<()> {
         std::fs::read_to_string("/proc/self/attr/current")?
     );
 
-    let tempdir = utils::generate_tmp();
-
-    utils::ensure_dir_exists(&tempdir)?;
-
     if let Err(e) = mount(
         &config.mountsource,
-        &tempdir,
+        "/debug_ramdisk",
         "tmpfs",
         MountFlags::empty(),
         None,
@@ -89,8 +83,7 @@ fn main() -> Result<()> {
     }
 
     let magic_mount_result = magic_mount::magic_mount(
-        &tempdir,
-        Path::new(MODULE_PATH),
+        MODULE_PATH,
         &config.mountsource,
         &config.partitions,
         config.umount,
@@ -101,7 +94,7 @@ fn main() -> Result<()> {
         None
     };
 
-    cleanup(tempdir);
+    cleanup();
     unmount()?;
 
     match magic_mount_result {

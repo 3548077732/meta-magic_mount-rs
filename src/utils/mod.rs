@@ -6,7 +6,7 @@ pub mod ksucalls;
 use std::{
     fs::{self, create_dir_all},
     io::Write,
-    path::{Path, PathBuf},
+    path::Path,
     process::Command,
 };
 
@@ -34,16 +34,6 @@ pub fn validate_module_id(module_id: &str) -> Result<()> {
             module_id: module_id.to_string(),
         })
     }
-}
-
-pub fn generate_tmp() -> PathBuf {
-    let mut name = String::new();
-
-    for _ in 0..10 {
-        name.push(fastrand::alphanumeric());
-    }
-
-    Path::new("/mnt").join(name)
 }
 
 pub fn lsetfilecon<P: AsRef<Path>>(path: P, con: &str) -> Result<()> {

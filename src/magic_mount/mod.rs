@@ -306,8 +306,7 @@ impl MagicMount {
 }
 
 pub fn magic_mount<P>(
-    tmp_path: P,
-    module_dir: &Path,
+    module_dir: P,
     mount_source: &str,
     extra_partitions: &[String],
     umount: bool,
@@ -315,9 +314,9 @@ pub fn magic_mount<P>(
 where
     P: AsRef<Path>,
 {
-    if let Some(root) = collect_module_files(module_dir, extra_partitions)? {
+    if let Some(root) = collect_module_files(module_dir.as_ref(), extra_partitions)? {
         log::debug!("collected: {root:?}");
-        let tmp_root = tmp_path.as_ref();
+        let tmp_root = Path::new("/debug_ramdisk");
         let tmp_dir = tmp_root.join("workdir");
         ensure_dir_exists(&tmp_dir)?;
 
