@@ -5,7 +5,7 @@ use std::path::Path;
 
 use rustix::mount::{UnmountFlags, unmount};
 
-use crate::{defs, utils::ksucalls};
+use crate::{defs, errors::Result, utils::ksucalls};
 
 fn init_logger() {
     #[cfg(not(target_os = "android"))]
@@ -41,6 +41,16 @@ fn init_list() {
         .get_or_init(|| super::parser::parser_custom(defs::CUSTOM_LIST_PATH));
 }
 
+pub fn emulated_soft_reboot(source: &str) -> Result<()> {
+    for mount in procfs::process::Process::myself()?.mountinfo()? {
+        if mount.mount_source.is_some_and(|s| s == source) {
+            log::debug!("umountung {source} in emulated-soft-reboot");
+            unmount(mount.mount_point, UnmountFlags::DETACH)?;
+        }
+    }
+    Ok(())
+}
+
 pub fn cleanup<P>(tempdir: P)
 where
     P: AsRef<Path>,
@@ -57,10 +67,9 @@ where
 }
 
 pub fn pre_init() {
-    assert!(
-        !(std::env::var("KSU_LATE_LOAD").is_ok() && std::env::var("KSU").is_ok()),
-        "! unsupported late load mode"
-    );
+    if std::env::var("KSU_LATE_LOAD").is_ok() {
+        log::info!("late load mode!!");
+    }
 
     init_logger();
     ksucalls::check_ksu();

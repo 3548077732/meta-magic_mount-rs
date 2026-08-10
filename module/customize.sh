@@ -9,10 +9,6 @@ if [ -z "$APATCH" ] && [ -z "$KSU" ]; then
   abort "! unsupported root platform"
 fi
 
-if [ -n "$KSU_LATE_LOAD" ] && [ -n "$KSU" ]; then
-  abort "! unsupported late load mode"
-fi
-
 case "$ARCH" in
 arm64)
   ui_print "- Selected architecture: arm64-v8a"
@@ -51,6 +47,7 @@ extract 'config_apatch.toml'
 extract 'metainstall.sh'
 extract 'metamount.sh'
 extract 'metauninstall.sh'
+extract 'emulated-soft-reboot.sh'
 extract 'uninstall.sh'
 extract 'launcher.png'
 mkdir -p "$MODPATH/bin/$ARCH_BINARY"
