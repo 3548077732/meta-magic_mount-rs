@@ -41,6 +41,12 @@ fn init_list() {
         .get_or_init(|| super::parser::parser_custom(defs::CUSTOM_LIST_PATH));
 }
 
+fn init_hook() {
+    std::panic::set_hook(Box::new(|e| {
+        log::error!("panicked!!, err: {e}");
+    }));
+}
+
 pub fn emulated_soft_reboot(source: &str) -> Result<()> {
     for mount in procfs::process::Process::myself()?.mountinfo()? {
         if mount.mount_source.is_some_and(|s| s == source) {
@@ -72,6 +78,7 @@ pub fn pre_init() {
     }
 
     init_logger();
+    init_hook();
     ksucalls::check_ksu();
     init_list();
 }
