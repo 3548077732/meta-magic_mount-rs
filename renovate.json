@@ -8,7 +8,14 @@
       "matchManagers": [
         "cargo"
       ],
+      "groupName": "rust-dependencies",
       "rangeStrategy": "bump"
+    },
+    {
+      "matchManagers": [
+        "npm"
+      ],
+      "groupName": "webui-dependencies"
     }
   ],
   "skipArtifactsUpdate": true,
