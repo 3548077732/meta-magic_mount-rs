@@ -11,15 +11,7 @@
       "rangeStrategy": "bump"
     }
   ],
-  "postUpgradeTasks": {
-    "commands": [
-      "rustup component add rustc-codegen-cranelift-preview --toolchain nightly"
-    ],
-    "executionMode": "update",
-    "installTools": {
-      "rust": {}
-    }
-  },
+  "skipArtifactsUpdate": true,
   "constraints": {
     "rust": "nightly"
   }
