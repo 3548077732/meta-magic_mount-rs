@@ -7,7 +7,12 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
 import { useI18n } from "vue-i18n";
-import { MiuixCard, MiuixSmallTitle, MiuixBasicComponent } from "miuix-vue";
+import {
+  MiuixCard,
+  MiuixSmallTitle,
+  MiuixBasicComponent,
+  MiuixText,
+} from "miuix-vue";
 import StatusCard from "../components/StatusCard.vue";
 import { uiStore } from "../../../lib/stores/uiStore.ts";
 import { sysStore } from "../../../lib/stores/sysStore";
@@ -15,6 +20,12 @@ import { moduleStore } from "../../../lib/stores/moduleStore";
 import { configStore } from "../../../lib/stores/configStore";
 
 const { t } = useI18n();
+
+function handle_setnav(navindex: number) {
+  if (!sysStore.loading) {
+    uiStore.setNavindex(navindex);
+  }
+}
 
 onMounted(async () => {
   await Promise.all([
@@ -36,8 +47,16 @@ onMounted(async () => {
       :summary="sysStore.device.model"
     />
     <div class="ex-card-row">
-      <MiuixCard class="ex-card--pad ex-grow">
-        <MiuixBasicComponent :title="t('status.moduleActive')">
+      <MiuixCard
+        show-indication
+        press-feedback="sink"
+        class="ex-card--pad ex-grow"
+      >
+        <MiuixBasicComponent
+          :title="t('status.moduleActive')"
+          clickable
+          @click="handle_setnav(2)"
+        >
           <template #end>
             <MiuixText>
               {{
@@ -47,8 +66,16 @@ onMounted(async () => {
           </template>
         </MiuixBasicComponent>
       </MiuixCard>
-      <MiuixCard class="ex-card--pad ex-grow">
-        <MiuixBasicComponent :title="t('status.mountSource')">
+      <MiuixCard
+        show-indication
+        press-feedback="sink"
+        class="ex-card--pad ex-grow"
+      >
+        <MiuixBasicComponent
+          :title="t('status.mountSource')"
+          clickable
+          @click="handle_setnav(1)"
+        >
           <template #end>
             <MiuixText>{{ configStore.config.mountsource }}</MiuixText>
           </template>
@@ -58,10 +85,12 @@ onMounted(async () => {
     <MiuixSmallTitle :text="t('status.sysInfoTitle')" />
     <MiuixCard class="ex-card">
       <MiuixBasicComponent
+        clickable
         :title="t('status.kernelLabel')"
         :summary="sysStore.systemInfo.kernel"
       />
       <MiuixBasicComponent
+        clickable
         :title="t('status.selinuxLabel')"
         :summary="sysStore.systemInfo.selinux"
       />

@@ -11,8 +11,11 @@ import {
   MiuixSearchBar,
   MiuixCard,
   MiuixText,
+  MiuixIcon,
   MiuixBasicComponent,
+  MiuixProgressIndicator,
 } from "miuix-vue";
+import { Help } from "miuix-vue/icons";
 import Label from "../components/Label.vue";
 import { moduleStore } from "../../../lib/stores/moduleStore";
 
@@ -52,16 +55,32 @@ onMounted(async () => {
         :label="t('modules.searchPlaceholder')"
       ></MiuixSearchBar>
     </div>
-
-    <div v-if="moduleStore.loading" align="center">
-      <MiuixText>{{ t("modules.scanning") }}</MiuixText>
+    <div v-if="moduleStore.loading" class="loading-wrapper">
+      <div class="loading-content">
+        <MiuixProgressIndicator
+          type="infinite"
+          color="var(--m-color-on-background-variant)"
+          style="flex: 1"
+        />
+        <MiuixText
+          color="var(--m-color-on-surface-variant-actions)"
+          style="flex: 1"
+        >
+          {{ t("modules.scanning") }}
+        </MiuixText>
+      </div>
     </div>
 
     <div
       v-else-if="moduleStore.modules.length === 0 || filterModules.length === 0"
-      align="center"
+      class="notfound-wrapper"
     >
-      <MiuixText class="ex-card">{{ t("modules.emptyState") }}</MiuixText>
+      <div class="loading-content">
+        <MiuixIcon :icon="Help" size="98" />
+        <MiuixText color="var(--m-color-on-surface-variant-actions)">
+          {{ t("modules.emptyState") }}
+        </MiuixText>
+      </div>
     </div>
 
     <div v-else>
@@ -129,5 +148,35 @@ onMounted(async () => {
 }
 .ex-card {
   margin: 0 12px 12px;
+}
+
+.loading-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.notfound-wrapper {
+  position: absolute;
+  left: 38%;
+  top: 45%;
+  display: flex;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
 }
 </style>

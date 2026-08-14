@@ -12,6 +12,7 @@ import {
   MiuixSmallTitle,
   MiuixBasicComponent,
   MiuixText,
+  MiuixProgressIndicator,
 } from "miuix-vue";
 import magicmount from "../components/logo.vue";
 import { useI18n } from "vue-i18n";
@@ -24,6 +25,7 @@ interface Contributor {
   name: string;
   url: string;
   html_url: string;
+  avatar_url: string;
   bio: string;
   type: string;
 }
@@ -32,6 +34,8 @@ const version = ref("");
 
 const { t } = useI18n();
 const contributors = ref<Contributor[]>([]);
+const loading = ref(true);
+const error = ref(false);
 
 API.getVersion().then((ver) => {
   version.value = ver;
@@ -48,6 +52,7 @@ if (cached) {
       Date.now() - parsed.timestamp < 24 * 60 * 60 * 1000
     ) {
       contributors.value = parsed.data;
+      loading.value = false;
     } else {
       localStorage.removeItem(STORAGE_KEY);
     }
@@ -97,15 +102,12 @@ if (!contributors.value.length) {
           data: result,
         }),
       );
+      loading.value = false;
     })
-    .catch(function (error) {
-      console.error(error);
-      contributors.value = [];
+    .catch(function () {
+      error.value = true;
+      loading.value = false;
     });
-}
-
-function getDisplayBio(bio: string | null) {
-  return bio ?? t("info.noBio");
 }
 
 function open_github_repo() {
@@ -130,7 +132,7 @@ function open_github_repo() {
     </MiuixCard>
 
     <MiuixSmallTitle :text="t('info.contributors')" />
-    <MiuixCard class="ex-card">
+    <MiuixCard v-if="!loading" class="ex-card">
       <div
         v-if="contributors.length > 0"
         v-for="contributor in contributors"
@@ -138,15 +140,30 @@ function open_github_repo() {
       >
         <MiuixBasicComponent
           :title="contributor.name ?? contributor.login"
-          :summary="getDisplayBio(contributor.bio)"
+          :summary="contributor.bio ?? t('info.noBio')"
           :clickable="true"
           @click="API.openLink(contributor.html_url)"
-        />
+        >
+          <template #start>
+            <img
+              :src="contributor.avatar_url"
+              width="42"
+              style="margin: 0 8px; border-radius: 12px"
+            />
+          </template>
+        </MiuixBasicComponent>
       </div>
-      <div v-else>
+      <div v-else-if="error">
         <MiuixBasicComponent :title="t('info.loadFail')" />
       </div>
     </MiuixCard>
+    <div v-else align="center">
+      <MiuixProgressIndicator
+        type="infinite"
+        color="var(--m-color-on-background-variant)"
+        style="padding-top: 12px"
+      />
+    </div>
   </div>
 </template>
 
