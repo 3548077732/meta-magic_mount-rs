@@ -61,9 +61,6 @@ pub fn cleanup() {
     if let Err(e) = unmount("/debug_ramdisk", UnmountFlags::DETACH) {
         log::warn!("failed to unmount tempdir: {e}");
     }
-    if let Err(e) = std::fs::remove_dir("/debug_ramdisk") {
-        log::warn!("failed to remove tempdir: {e}");
-    }
 }
 
 pub fn pre_init() {
