@@ -22,8 +22,6 @@ pub enum Error {
     #[error(transparent)]
     Io(#[from] std::io::Error),
     #[error(transparent)]
-    Glob(#[from] glob::PatternError),
-    #[error(transparent)]
     Pproperties(#[from] java_properties::PropertiesError),
     #[error(transparent)]
     AnyHow(#[from] anyhow::Error),
