@@ -59,7 +59,7 @@ fn parse(content: &str) -> Vec<MountType> {
                     log::debug!("failed to parse {line}");
                 }
             }
-        } else if line.starts_with("file") {
+        } else if line.starts_with("file") || line.starts_with("add") {
             match parse_file(line) {
                 Some(s) => {
                     if FILES.lock().contains(&s) {
