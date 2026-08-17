@@ -243,6 +243,6 @@ fn mount_type_display() {
     assert_eq!(format!("{}", mount), "s -> t");
     assert_eq!(
         format!("{}", MountType::Ignore { source: "x".into() }),
-        "missing x"
+        "ignored x"
     );
 }
