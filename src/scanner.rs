@@ -3,12 +3,11 @@
 
 use std::{collections::BTreeMap, fs, io::Cursor, path::Path};
 
-use anyhow::Result;
 use java_properties::PropertiesIter;
 use rustc_hash::{FxHashMap, FxHashSet};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
-use crate::{defs, utils::validate_module_id};
+use crate::{defs, errors::Result, utils::validate_module_id};
 
 #[derive(Debug)]
 struct ModuleRecord {
@@ -23,13 +22,13 @@ struct ModuleRecord {
     source_path: String,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct ModuleRules {
     default_mode: String,
     paths: BTreeMap<String, String>,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct AppModule {
     pub id: String,
     name: String,
@@ -136,6 +135,28 @@ where
     modules.sort_by(|a, b| a.id.cmp(&b.id));
 
     modules
+}
+
+pub fn show_modules(modules: Vec<AppModule>) -> Result<Vec<AppModule>> {
+    let orgi = std::fs::read_to_string(defs::SCANNED_LIST)?;
+    let orgi_modules: Vec<AppModule> = serde_json::from_str(&orgi)?;
+
+    let mounted_modules: Vec<String> = orgi_modules
+        .iter()
+        .filter(|s| s.is_mounted)
+        .map(|s| s.name.clone())
+        .collect();
+
+    let mut ret = Vec::new();
+
+    for mut i in modules {
+        if mounted_modules.contains(&i.name) {
+            i.is_mounted = true;
+        }
+        ret.push(i);
+    }
+
+    Ok(ret)
 }
 
 pub fn list_modules<P>(module_dir: P, extra: &[String]) -> Vec<AppModule>

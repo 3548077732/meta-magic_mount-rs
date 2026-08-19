@@ -33,6 +33,8 @@ fn main() -> Result<()> {
     misc::pre_init();
 
     let args: Vec<_> = std::env::args().collect();
+    let config = Config::load(defs::CONFIG_FILE)?;
+    let modules = scanner::list_modules(MODULE_PATH, &config.partitions);
 
     if let Some(arg) = args.get(1) {
         match arg.as_str() {
@@ -49,7 +51,10 @@ fn main() -> Result<()> {
                 handle_gen_config()?;
             }
             "modules" => {
-                println!("{}", std::fs::read_to_string(defs::SCANNED_LIST)?);
+                println!(
+                    "{}",
+                    serde_json::to_string_pretty(&scanner::show_modules(modules)?)?
+                );
             }
             "version" => {
                 println!("{{ \"version\": \"{}\" }}", env!("CARGO_PKG_VERSION"));
@@ -60,8 +65,6 @@ fn main() -> Result<()> {
         return Ok(());
     }
 
-    let config = Config::load(defs::CONFIG_FILE)?;
-    let modules = scanner::list_modules(MODULE_PATH, &config.partitions);
     let _ = std::fs::write(defs::SCANNED_LIST, &serde_json::to_string_pretty(&modules)?);
 
     log::info!("Magic Mount Starting");
