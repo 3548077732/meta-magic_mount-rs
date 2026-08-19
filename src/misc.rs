@@ -58,12 +58,12 @@ pub fn cleanup() {
 }
 
 pub fn pre_init() {
-    if std::env::var("KSU_LATE_LOAD").is_ok() {
-        log::info!("late load mode!!");
-    }
-
     init_logger();
     init_hook();
     ksucalls::check_ksu();
     init_list();
+
+    if std::env::var("KSU_LATE_LOAD").is_ok() {
+        log::info!("late load mode!!");
+    }
 }
