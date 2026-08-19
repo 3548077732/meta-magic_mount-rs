@@ -109,3 +109,13 @@ cargo xtask build
 ## 许可证
 
 [GPL-v3 许可证](http://www.gnu.org/licenses/gpl.html)
+
+## Star History
+
+<a href="https://star-history.dera.page/#Tools-cx-app/meta-magic_mount-rs">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://star-history.dera.page/svg?repos=Tools-cx-app/meta-magic_mount-rs&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://star-history.dera.page/svg?repos=Tools-cx-app/meta-magic_mount-rs" />
+   <img alt="Star History Chart" src="https://star-history.dera.page/svg?repos=Tools-cx-app/meta-magic_mount-rs" />
+ </picture>
+</a>
